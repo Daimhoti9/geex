@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.signin-input {
+  height: 30px;
+  border-radius: 7px;
+  width: 300px;
+  border: 1px solid lightgray;
+  padding: 5px;
+}
+
+.signin-email {
+  height: 30px !important;
+  border-radius: 7px !important;
+  width: 300px !important;
+  border: 1px solid lightgray !important;
+  padding: 5px !important;
+}
+
+.signin-btn{
+  height: 40px;
+  border-radius: 7px;
+  border: 1px solid lightgray;
+  padding: 5px;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.fieldbox{
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.signin-btn:hover{
+  background-color: #2980b9;
+}
+
+.otp-btn{
+  height: 40px;
+  border-radius: 7px;
+  width: 100%;
+  border: 1px solid lightgray;
+  padding: 5px;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  grid-column: 2 / span 2;
+}
+
+.otp-back-btn{
+  height: 40px;
+  border-radius: 7px;
+  border: 1px solid lightgray;
+  padding: 5px 10px;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  grid-column: 1 / span 2;
+}
+
+.input {
+  position: relative;
+}
+
+.input > form > input[type="text"] {
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 16px;
+  border: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top: 1px solid #eee;
+  box-shadow: none;
+  box-sizing: border-box;
+  opacity: 1;
+  outline: none;
+  padding: 16px 52px 16px 10px;
+  width: 100%;
+  -webkit-appearance: none;
+}
+
+.input > form > input:focus {
+  outline: none;
+}
+
+.input > form > button {
+  background-color: transparent;
+  border: 0;
+  border-bottom-right-radius: 10px;
+  box-shadow: none;
+  cursor: pointer;
+  fill: #4a4a4a;
+  opacity: 1;
+  outline: none;
+  padding: 14px 16px 12px 16px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.signin-input {
+  height: 30px;
+  border-radius: 7px;
+  width: 300px;
+  border: 1px solid lightgray;
+  padding: 5px;
+}
+
+.signin-btn{
+  height: 40px;
+  width: 100%;
+  border-radius: 7px;
+  border: 1px solid lightgray;
+  padding: 5px;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.fieldbox{
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  position: relative;
+}
+
+.signin-btn:hover{
+  background-color: #2980b9;
+}
+
+.otp-btn{
+  height: 40px;
+  border-radius: 7px;
+  width: 100%;
+  border: 1px solid lightgray;
+  padding: 5px;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  grid-column: 2 / span 2;
+}
+
+.otp-back-btn{
+  height: 40px;
+  border-radius: 7px;
+  border: 1px solid lightgray;
+  padding: 5px 10px;
+  background-color: transparent;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  grid-column: 1 / span 2;
+}
