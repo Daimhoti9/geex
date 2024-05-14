@@ -12,9 +12,9 @@ import Logo from '../../Resources/logo_bg_rm.jpg'
 import jsPDF from 'jspdf';
 
 
-const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, newRecruiterFormData, setNewRecruiterFormData, setQuestionaire}) => {
+const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, newRecruiterFormData, setNewRecruiterFormData, setQuestionaire }) => {
 
-    
+
     const [step, setStep] = useState(1);
 
     const [contactDetails, setContactDetails] = useState({
@@ -108,41 +108,70 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
     }
 
     const generateCVTemp = async (contactDetails1) => {
-        let recruiterName=newRecruiterFormData.firstName+" "+newRecruiterFormData.lastName
-        let contactDetails=[contactDetails1.email, contactDetails1.phoneNumber, contactDetails1.completeAddress]
-        let educationInfo={
-            first:{
-                toDate:education.year,
+        let recruiterName = newRecruiterFormData.firstName + " " + newRecruiterFormData.lastName
+        let contactDetails = [contactDetails1.email, contactDetails1.phoneNumber, contactDetails1.completeAddress]
+        let educationInfo = {
+            first: {
+                toDate: education.year,
                 heading: education.university,
-                subHeading:education.degree+" | "+education.field,
-                addrerss:education.place
+                subHeading: education.degree + " | " + education.field,
+                addrerss: education.place
             },
-            second:{
-                toDate:education.year,
+            second: {
+                toDate: education.year,
                 heading: education.university,
-                subHeading:education.degree+" | "+education.field,
-                addrerss:education.place
-            }
-        }
-        let experienceInfo={
-            first:{
-                fromDate:workExperiences[0].startDate.split("-")[0],
-                toDate:workExperiences[0].endDate.split("-")[0],
-                heading:workExperiences[0].company,
-                subHeading:workExperiences[0].title,
-                addrerss:workExperiences[0].location
-            },
-            second:{
-                fromDate:workExperiences[1].startDate.split("-")[0],
-                toDate:workExperiences[1].endDate.split("-")[0],
-                heading:workExperiences[1].company,
-                subHeading:workExperiences[1].title,
-                addrerss:workExperiences[1].location
+                subHeading: education.degree + " | " + education.field,
+                addrerss: education.place
             }
         }
 
-        let processedLanguages=languages.map(lang=> ({name:lang.name, val:parseInt(lang.proficiency)}))
-        
+
+        let experienceInfo = {
+        }
+        if (workExperiences.length > 0) {
+
+            experienceInfo = {
+                first: {
+                    fromDate: workExperiences[0].startDate.split("-")[0],
+                    toDate: workExperiences[0]?.endDate?.split("-")[0],
+                    heading: workExperiences[0].company,
+                    subHeading: workExperiences[0].title,
+                    addrerss: workExperiences[0].location,
+                    currentlyWorking: workExperiences[0].currentlyWorking
+                },
+            }
+        }
+        if (workExperiences.length > 1) {
+            experienceInfo = {
+                ...experienceInfo,
+                second: {
+                    fromDate: workExperiences[1].startDate.split("-")[0],
+                    toDate: workExperiences[1]?.endDate?.split("-")[0],
+                    heading: workExperiences[1].company,
+                    subHeading: workExperiences[1].title,
+                    addrerss: workExperiences[1].location,
+                    currentlyWorking: workExperiences[1].currentlyWorking
+                }
+            }
+        }
+
+        function getLanageValue(strLevel) {
+            if (strLevel == "0")
+                return 0
+
+            if (strLevel == "A1/A2")
+                return 40
+            if (strLevel == "B1/B2")
+                return 70
+            if (strLevel == "C1/C2")
+                return 100
+
+
+
+        }
+
+        let processedLanguages = languages.map(lang => ({ name: lang.name, val: getLanageValue(lang.proficiency), label: lang.proficiency }))
+
 
         // Create a new jsPDF instance
         const doc = new jsPDF('p', 'pt', 'a4');
@@ -172,7 +201,7 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
         doc.addImage(logo, 'JPEG', logoX, pageHeight * 0.1 - 50, logoWidth, logoHeight);
 
         // Add 'RECRUITER NAME' heading centered on the page
-        const usedColor="#cb9731"
+        const usedColor = "#cb9731"
         doc.setFontSize(35);
         doc.setFont('helvetica', 'bold');
         doc.text(recruiterName, pageWidth / 2, pageHeight * 0.35, { align: 'center' });
@@ -226,7 +255,7 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         doc.setTextColor(0);
         // Section 1: Left section
-        let yT1=sectionY + 35
+        let yT1 = sectionY + 35
         const section1X = margin;
         doc.setFontSize(18);
         doc.setFont('helvetica', 'normal');
@@ -235,13 +264,13 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         doc.setFont('helvetica', 'normal');
         doc.setFillColor(usedColor);
-        doc.setTextColor(255,255,255);
-        yT1+=25
-        doc.rect(section1X, yT1, 85, 12, 'F');
-        doc.setFillColor(0,0,0);
-        yT1+=10
+        doc.setTextColor(255, 255, 255);
+        yT1 += 25
+        doc.rect(section1X, yT1, 53, 12, 'F');
+        doc.setFillColor(0, 0, 0);
+        yT1 += 10
         doc.text(
-            "____ - "+educationInfo.first.toDate,
+            " " + educationInfo.first.toDate,
             section1X + 10,
             yT1,
             { maxWidth: sectionWidth - 20 }
@@ -250,11 +279,11 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         doc.setFontSize(11);
         let educationHeading = educationInfo.first.heading;
-        educationHeading=educationHeading.toUpperCase()
-        yT1+=20
+        educationHeading = educationHeading.toUpperCase()
+        yT1 += 20
         doc.text(educationHeading, section1X, yT1, { maxWidth: sectionWidth - 20 });
 
-        yT1+=15
+        yT1 += 15
         educationHeading = educationInfo.first.subHeading;
         doc.text(educationHeading, section1X, yT1, { maxWidth: sectionWidth - 20 });
 
@@ -262,60 +291,60 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         let educationText = educationInfo.first.addrerss;
         let textLines = doc.splitTextToSize(educationText, sectionWidth - 20);
-        let textHeight = textLines.length * 10; 
+        let textHeight = textLines.length * 10;
 
-        let y=yT1 + 15
+        let y = yT1 + 15
 
         doc.text(
             educationText,
             section1X,
-            y, 
+            y,
             { maxWidth: sectionWidth - 20 }
         );
 
         doc.setFontSize(12);
-        y=y+textHeight+20
+        y = y + textHeight + 20
 
-        doc.setFillColor(usedColor);
-        doc.setTextColor(255,255,255);
-        doc.rect(section1X, y-10, 85, 12, 'F');
-        doc.setFillColor(0,0,0);
-        
-        doc.text(
-            "____ - "+educationInfo.second.toDate,
-            section1X + 10,
-            y,
-            { maxWidth: sectionWidth - 20 }
-        );
+        // doc.setFillColor(usedColor);
+        // doc.setTextColor(255,255,255);
+        // doc.rect(section1X, y-10, 85, 12, 'F');
+        // doc.setFillColor(0,0,0);
+
+        // doc.text(
+        //     ""+educationInfo.second.toDate,
+        //     section1X + 10,
+        //     y,
+        //     { maxWidth: sectionWidth - 20 }
+        // );
         doc.setTextColor(0);
 
 
-        y+=20
+        y += 20
         doc.setFontSize(10);
         educationHeading = educationInfo.second.heading;
-        educationHeading=educationHeading.toUpperCase()
-        doc.text(educationHeading, section1X, y, { maxWidth: sectionWidth - 20 });
+        educationHeading = educationHeading.toUpperCase()
+        // doc.text(educationHeading, section1X, y, { maxWidth: sectionWidth - 20 });
 
-        y+=15
+        y += 15
         educationHeading = educationInfo.second.subHeading;
-        doc.text(educationHeading, section1X, y, { maxWidth: sectionWidth - 20 });
+        // doc.text(educationHeading, section1X, y, { maxWidth: sectionWidth - 20 });
 
 
         educationText = educationInfo.second.addrerss;
         textLines = doc.splitTextToSize(educationText, sectionWidth - 20);
         textHeight = textLines.length * 10;
 
-        y=y+  15
-        doc.text(
-            educationText,
-            section1X,
-            y, 
-            { maxWidth: sectionWidth - 20 }
-        );
+        y = y + 15
+        // doc.text(
+        //     educationText,
+        //     section1X,
+        //     y, 
+        //     { maxWidth: sectionWidth - 20 }
+        // );
 
 
 
-        
+
 
 
 
@@ -326,7 +355,7 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         doc.setTextColor(0);
         // Section 1: Left section
-        let yT2=sectionY + 35
+        let yT2 = sectionY + 35
         const section2X = margin + sectionWidth;
         doc.setFontSize(18);
         doc.setFont('helvetica', 'normal');
@@ -335,13 +364,13 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         doc.setFont('helvetica', 'normal');
         doc.setFillColor(usedColor);
-        doc.setTextColor(255,255,255);
-        yT2+=25
-        doc.rect(section2X, yT2, 85, 12, 'F');
-        doc.setFillColor(0,0,0);
-        yT2+=10
+        doc.setTextColor(255, 255, 255);
+        yT2 += 25
+        doc.rect(section2X, yT2, 94, 12, 'F');
+        doc.setFillColor(0, 0, 0);
+        yT2 += 10
         doc.text(
-            experienceInfo.first.fromDate+" - "+experienceInfo.first.toDate,
+            experienceInfo.first.fromDate + " - " + (experienceInfo.first.toDate ? experienceInfo.first.toDate : "Current"),
             section2X + 10,
             yT2,
             { maxWidth: sectionWidth - 20 }
@@ -350,11 +379,11 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         doc.setFontSize(11);
         educationHeading = experienceInfo.first.heading;
-        educationHeading=educationHeading.toUpperCase()
-        yT2+=20
+        educationHeading = educationHeading.toUpperCase()
+        yT2 += 20
         doc.text(educationHeading, section2X, yT2, { maxWidth: sectionWidth - 20 });
 
-        yT2+=15
+        yT2 += 15
         educationHeading = experienceInfo.first.subHeading;
         doc.text(educationHeading, section2X, yT2, { maxWidth: sectionWidth - 20 });
 
@@ -362,130 +391,151 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
         educationText = experienceInfo.first.addrerss;
         textLines = doc.splitTextToSize(educationText, sectionWidth - 20);
-        textHeight = textLines.length * 10; 
+        textHeight = textLines.length * 10;
 
-        y=yT2 + 15
+        y = yT2 + 15
 
         doc.text(
             educationText,
             section2X,
-            y, 
-            { maxWidth: sectionWidth - 20 }
-        );
-
-        doc.setFontSize(12);
-        y=y+textHeight+20
-
-        doc.setFillColor(usedColor);
-        doc.setTextColor(255,255,255);
-        doc.rect(section2X, y-10, 85, 12, 'F');
-        doc.setFillColor(0,0,0);
-        
-        doc.text(
-            experienceInfo.second.fromDate+" - "+experienceInfo.second.toDate,
-            section2X + 10,
             y,
             { maxWidth: sectionWidth - 20 }
         );
+
+        //second experience
+
+        doc.setFontSize(12);
+        y = y + textHeight + 20
+
+        if (experienceInfo.second) {
+            doc.setFillColor(usedColor);
+            doc.setTextColor(255, 255, 255);
+            doc.rect(section2X, y - 10, 94, 12, 'F');
+            doc.setFillColor(0, 0, 0);
+
+        }
+
+
+        if (experienceInfo.second) {
+            doc.text(
+                experienceInfo.second.fromDate + " - " + (experienceInfo.second.toDate ? experienceInfo.second.toDate : "Current"),
+                section2X + 10,
+                y,
+                { maxWidth: sectionWidth - 20 }
+            );
+        }
+
+
         doc.setTextColor(0);
 
 
-        y+=20
+        y += 20
         doc.setFontSize(10);
-        educationHeading = experienceInfo.second.heading;
-        educationHeading=educationHeading.toUpperCase()
-        doc.text(educationHeading, section2X, y, { maxWidth: sectionWidth - 20 });
+        educationHeading = experienceInfo?.second?.heading;
+        educationHeading = educationHeading?.toUpperCase()
+        if (experienceInfo.second) {
+            doc.text(educationHeading, section2X, y, { maxWidth: sectionWidth - 20 });
+        }
+        y += 15
+        educationHeading = experienceInfo?.second?.subHeading;
+        if (experienceInfo.second) {
+            doc.text(educationHeading, section2X, y, { maxWidth: sectionWidth - 20 });
+        }
 
-        y+=15
-        educationHeading = experienceInfo.second.subHeading;
-        doc.text(educationHeading, section2X, y, { maxWidth: sectionWidth - 20 });
+        educationText = experienceInfo?.second?.addrerss;
+        textLines = doc.splitTextToSize(educationText ? educationText : "", sectionWidth - 20);
+        textHeight = textLines.length * 10;
 
-
-        educationText = experienceInfo.second.addrerss;
-        textLines = doc.splitTextToSize(educationText, sectionWidth - 20);
-        textHeight = textLines.length * 10; 
-
-        y=y+  15
-        doc.text(
-            educationText,
-            section2X,
-            y, 
-            { maxWidth: sectionWidth - 20 }
-        );
-
-
-
-
-
-
+        y = y + 15
+        if (experienceInfo.second) {
+            doc.text(
+                educationText,
+                section2X,
+                y,
+                { maxWidth: sectionWidth - 20 }
+            );
+        }
 
 
 
-        function addLanguage(name,val){
+
+
+
+
+
+
+        function addLanguage(name, val, label) {
             doc.setTextColor(usedColor);
             doc.text(name, section1X, yS1);
+
+            doc.text("_" + label, sectionWidth - 100, yS1 - 7)
             doc.setFillColor(0, 0, 0);
-            doc.rect(sectionWidth-120, yS1-3, totalLength, heightOfBar, 'F');
-    
+            doc.rect(sectionWidth - 120, yS1 - 3, totalLength, heightOfBar, 'F');
+
             //langaguge 1
             doc.setFillColor(usedColor);
-            let langVal=val       //langayge value from form
-            let calculatedLength=  Math.round((langVal/100)*totalLength)
-            doc.rect(sectionWidth-120, yS1-3, calculatedLength, heightOfBar, 'F');
+            let langVal = val       //langayge value from form
+            let calculatedLength = Math.round((langVal / 100) * totalLength)
+            doc.rect(sectionWidth - 120, yS1 - 3, calculatedLength, heightOfBar, 'F');
             doc.setFillColor(null);
         }
 
         doc.setTextColor(0);
-        let yS1=y+70
+        let yS1 = y + 70
         doc.setFontSize(18);
         doc.setFont('helvetica', 'normal');
-        doc.text('LANGAUGE', section1X, yS1);
+        if (languages.length > 0) {
+            doc.text('LANGAUGE', section1X, yS1);
+
+        }
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        
-        yS1+=30
-        let totalLength=130
-        let heightOfBar=3        
-        for (let i=0;i<processedLanguages.length;i++){
-            addLanguage(processedLanguages[i].name, processedLanguages[i].val)
-            yS1+=25
+
+        yS1 += 30
+        let totalLength = 130
+        let heightOfBar = 3
+        for (let i = 0; i < processedLanguages.length; i++) {
+            addLanguage(processedLanguages[i].name, processedLanguages[i].val, processedLanguages[i].label)
+            yS1 += 30
         }
 
 
-        let num=0
-        function addSkill(name){
-            if(num%2==0){
+        let num = 0
+        function addSkill(name) {
+            if (num % 2 == 0) {
                 doc.text(name, section2X, yS2);
-            }else{
-                doc.text(name, section2X+100, yS2);
-                yS2+=25
+            } else {
+                doc.text(name, section2X + 100, yS2);
+                yS2 += 25
             }
             num++;
         }
 
         doc.setTextColor(0);
-        let yS2=y+70
+        let yS2 = y + 70
         doc.setFontSize(18);
         doc.setFont('helvetica', 'normal');
-        doc.text('SKILLS', section2X, yS2);
+        if (skills.length > 0) {
+            doc.text('SKILLS', section2X, yS2);
+        }
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(usedColor);
-        yS2+=30
+        yS2 += 30
 
-        skills.forEach(skill=>{
+        skills.forEach(skill => {
             addSkill(skill)
         })
 
 
         try {
             // Save the PDF as a blob
-            const blob=doc.output('blob');
-            doc.save(newRecruiterFormData.firstName+" "+newRecruiterFormData.lastName+'_CV.pdf');
-            
+            const blob = doc.output('blob');
+            doc.save(newRecruiterFormData.firstName + " " + newRecruiterFormData.lastName + '_CV.pdf');
+
             // Create FormData to send the PDF file
             const formData = new FormData();
-            formData.append('pdfFile', blob, contactDetails1.email+'_CV.pdf');
+            formData.append('pdfFile', blob, contactDetails1.email + '_CV.pdf');
 
             // Send the PDF file to the backend using fetch
             const url = `${process.env.REACT_APP_BACKEND_URL}/recruiter/CVs`;
@@ -512,8 +562,8 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
 
 
     const handleGenerateCV = async () => {
-        try { 
-            generateCVTemp(contactDetails,education)
+        try {
+            generateCVTemp(contactDetails, education)
         } catch (error) {
             console.error('Error adding Recruiter', error.message);
         }
@@ -527,6 +577,9 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
             [name]: value,
         }));
     };
+    const generateQuestionaiorePDF = () => {
+
+    }
 
     return (
         <>
@@ -537,23 +590,23 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
                         <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
                             <div className="flex items-center justify-between gap-20 p-5 px-10 border-b border-solid bg-[#FFF500] rounded-t ">
                                 <h3 className="text-xl font-bold text-black">Questionare</h3>
-                                <img src={Cross} className='w-10 h-10 transition-all duration-200 cursor-pointer hover:scale-110' onClick={() => {setNewRecruiterModelStep(false); setAddModal(true);}} />
+                                <img src={Cross} className='w-10 h-10 transition-all duration-200 cursor-pointer hover:scale-110' onClick={() => { setNewRecruiterModelStep(false); setAddModal(true); }} />
                             </div>
                             <div>
                                 {
-                                    step == 1 ? <ContactDetails step={step} setStep={setStep} contactDetails={contactDetails} setContactDetails={setContactDetails} /> : 
-                                    step == 2 ? <CareerGoals step={step} setStep={setStep} careerGoals={careerGoals} setCareerGoals={setCareerGoals} /> :
-                                    step == 3 ? <Education step={step} setStep={setStep} education={education} setEducation={setEducation} /> :
-                                    step == 4 ? <WorkExperience step={step} setStep={setStep} workExperiences={workExperiences} setWorkExperiences={setWorkExperiences} /> :
-                                    step == 5 ? <Skills step={step} setStep={setStep} skills={skills} setSkills={setSkills} skillsInfo={skillsInfo} setSkillsInfo={setSkillsInfo} /> :
-                                    step == 6 ? <CertificationsAndLanguages step={step} setStep={setStep} certificates={certificates} setCertificates={setCertificates} languages={languages} setLanguages={setLanguages} memberships={memberships} setMemberships={setMemberships} volunteerExperinces={volunteerExperinces} setVolunteerExperinces={setVolunteerExperinces} /> : 
-                                    step == 7 ? <AchievementsAndReferences step={step} setStep={setStep} achievements={achievements} setAchievements={setAchievements} references={references} setReferences={setReferences} /> : 
-                                    step == 8 ? <ProblemSolving step={step} setStep={setStep} problemSolving={problemSolving} setProblemSolving={setProblemSolving} /> : 
-                                    step == 9 ? <TeamWork step={step} setStep={setStep} teamWork={teamWork} setTeamWork={setTeamWork} /> : 
-                                    step == 10 ? <CustomerService step={step} setStep={setStep} customerService={customerService} setCustomerService={setCustomerService} /> : 
-                                    step == 11 ? <Adaptibility step={step} setStep={setStep} adaptibility={adaptibility} setAdaptibility={setAdaptibility} /> : 
-                                    step == 12 ? <CompanyMotivation step={step} setStep={setStep} companyMotivation={companyMotivation} setCompanyMotivation={setCompanyMotivation} /> : 
-                                    step == 13 ? <AdditionalQuestions step={step} setStep={setStep} additionalQuestions={additionalQuestions} setAdditionalQuestions={setAdditionalQuestions} /> : <></>
+                                    step == 1 ? <ContactDetails step={step} setStep={setStep} contactDetails={contactDetails} setContactDetails={setContactDetails} /> :
+                                        step == 2 ? <CareerGoals step={step} setStep={setStep} careerGoals={careerGoals} setCareerGoals={setCareerGoals} /> :
+                                            step == 3 ? <Education step={step} setStep={setStep} education={education} setEducation={setEducation} /> :
+                                                step == 4 ? <WorkExperience step={step} setStep={setStep} workExperiences={workExperiences} setWorkExperiences={setWorkExperiences} /> :
+                                                    step == 5 ? <Skills step={step} setStep={setStep} skills={skills} setSkills={setSkills} skillsInfo={skillsInfo} setSkillsInfo={setSkillsInfo} /> :
+                                                        step == 6 ? <CertificationsAndLanguages step={step} setStep={setStep} certificates={certificates} setCertificates={setCertificates} languages={languages} setLanguages={setLanguages} memberships={memberships} setMemberships={setMemberships} volunteerExperinces={volunteerExperinces} setVolunteerExperinces={setVolunteerExperinces} /> :
+                                                            step == 7 ? <AchievementsAndReferences step={step} setStep={setStep} achievements={achievements} setAchievements={setAchievements} references={references} setReferences={setReferences} /> :
+                                                                step == 8 ? <ProblemSolving step={step} setStep={setStep} problemSolving={problemSolving} setProblemSolving={setProblemSolving} /> :
+                                                                    step == 9 ? <TeamWork step={step} setStep={setStep} teamWork={teamWork} setTeamWork={setTeamWork} /> :
+                                                                        step == 10 ? <CustomerService step={step} setStep={setStep} customerService={customerService} setCustomerService={setCustomerService} /> :
+                                                                            step == 11 ? <Adaptibility step={step} setStep={setStep} adaptibility={adaptibility} setAdaptibility={setAdaptibility} /> :
+                                                                                step == 12 ? <CompanyMotivation step={step} setStep={setStep} companyMotivation={companyMotivation} setCompanyMotivation={setCompanyMotivation} /> :
+                                                                                    step == 13 ? <AdditionalQuestions step={step} setStep={setStep} additionalQuestions={additionalQuestions} setAdditionalQuestions={setAdditionalQuestions} /> : <></>
                                 }
                             </div>
                             <div className="flex items-center justify-between p-4 border-t border-solid rounded-b border-blueGray-200">
@@ -589,7 +642,7 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, setAddModal, n
     );
 }
 
-const ContactDetails = ({step, setStep, contactDetails, setContactDetails}) => {
+const ContactDetails = ({ step, setStep, contactDetails, setContactDetails }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -611,13 +664,13 @@ const ContactDetails = ({step, setStep, contactDetails, setContactDetails}) => {
                         <img src={Arrow} className='rotate-90' />
                     </div>
                     <div onClick={() => {
-                            if(!contactDetails.completeAddress || !contactDetails.city || !contactDetails.postalCode || !contactDetails.province || !contactDetails.country || !contactDetails.email || !contactDetails.phoneNumber || !contactDetails.fixNumber) {
-                                setError('Please fill all the fields!')
-                            } else {
-                                setError('');
-                                setStep(step + 1)
-                            }
-                        }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
+                        if (!contactDetails.completeAddress || !contactDetails.city || !contactDetails.postalCode || !contactDetails.province || !contactDetails.country || !contactDetails.email || !contactDetails.phoneNumber || !contactDetails.fixNumber) {
+                            setError('Please fill all the fields!')
+                        } else {
+                            setError('');
+                            setStep(step + 1)
+                        }
+                    }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
                         <img src={Arrow} className='-rotate-90' />
                     </div>
                 </div>
@@ -668,7 +721,7 @@ const ContactDetails = ({step, setStep, contactDetails, setContactDetails}) => {
     )
 }
 
-const CareerGoals = ({step, setStep, careerGoals, setCareerGoals}) => {
+const CareerGoals = ({ step, setStep, careerGoals, setCareerGoals }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -690,13 +743,13 @@ const CareerGoals = ({step, setStep, careerGoals, setCareerGoals}) => {
                         <img src={Arrow} className='rotate-90' />
                     </div>
                     <div onClick={() => {
-                            if(!careerGoals.targetJob || !careerGoals.industry || !careerGoals.workEnvironment) {
-                                setError('Please fill all the fields!')
-                            } else {
-                                setError('');
-                                setStep(step + 1)
-                            }
-                        }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
+                        if (!careerGoals.targetJob || !careerGoals.industry || !careerGoals.workEnvironment) {
+                            setError('Please fill all the fields!')
+                        } else {
+                            setError('');
+                            setStep(step + 1)
+                        }
+                    }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
                         <img src={Arrow} className='-rotate-90' />
                     </div>
                 </div>
@@ -704,22 +757,22 @@ const CareerGoals = ({step, setStep, careerGoals, setCareerGoals}) => {
             <div className='flex flex-col items-center justify-center w-full h-full gap-5 mt-10 align-middle'>
                 <div className='flex flex-col w-full gap-1'>
                     <label>Target Job Title(s):</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='targetJob' value={careerGoals.targetJob} className='block p-2 border-black border-b-' rows="4" placeholder='What specific roles are you interested in?'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='targetJob' value={careerGoals.targetJob} className='block p-2 border-black border-b-' rows="4" placeholder='What specific roles are you interested in?' />
                 </div>
                 <div className='flex flex-col w-full gap-1'>
                     <label>Industry</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='industry' value={careerGoals.industry} className='block p-2 border-black border-b-' rows="4" placeholder='What industry are you targeting? (Optional)'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='industry' value={careerGoals.industry} className='block p-2 border-black border-b-' rows="4" placeholder='What industry are you targeting? (Optional)' />
                 </div>
                 <div className='flex flex-col w-full gap-1'>
                     <label>Ideal Work Environment</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='workEnvironment' value={careerGoals.workEnvironment} className='block p-2 border-black border-b-' rows="4" placeholder='What kind of company culture are you seeking? (e.g., fast-paced, collaborative)'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='workEnvironment' value={careerGoals.workEnvironment} className='block p-2 border-black border-b-' rows="4" placeholder='What kind of company culture are you seeking? (e.g., fast-paced, collaborative)' />
                 </div>
             </div>
         </div>
     )
 }
 
-const Education = ({step, setStep, education, setEducation}) => {
+const Education = ({ step, setStep, education, setEducation }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -741,57 +794,57 @@ const Education = ({step, setStep, education, setEducation}) => {
                         <img src={Arrow} className='rotate-90' />
                     </div>
                     <div onClick={() => {
-                            if(!education.degree || !education.field || !education.university || !education.place || !education.year || !education.experience || !education.projects || !education.information || !education.responsibilities || !education.toolAndSoftwares || !education.approach) {
-                                setError('Please fill all the fields!')
-                            } else {
-                                setError('');
-                                setStep(step + 1)
-                            }
-                        }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
+                        if (!education.degree || !education.field || !education.university || !education.place || !education.year || !education.experience || !education.projects || !education.information || !education.responsibilities || !education.toolAndSoftwares || !education.approach) {
+                            setError('Please fill all the fields!')
+                        } else {
+                            setError('');
+                            setStep(step + 1)
+                        }
+                    }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
                         <img src={Arrow} className='-rotate-90' />
                     </div>
                 </div>
             </div>
             <div className='flex flex-col items-center justify-center w-full h-full gap-5 mt-10 align-middle'>
                 <div className='flex flex-col w-full gap-1'>
-                    <p className='leading-10'><input onChange={(e) => handleInputChange(e)} name='degree' value={education.degree} className='border-b border-gray-300 border-dotted' placeholder='Degree Earned'/> in <input onChange={(e) => handleInputChange(e)} name='field' value={education.field} className='border-b border-gray-300 border-dotted' placeholder='Field of Study' />   <input onChange={(e) => handleInputChange(e)} name='university' value={education.university} className='border-b border-gray-300 border-dotted' placeholder='University Name' />, <input onChange={(e) => handleInputChange(e)} name='place' value={education.place} className='border-b border-gray-300 border-dotted' placeholder='City, State' /> | Graduation Year: <input onChange={(e) => handleInputChange(e)} name='year' value={education.year} className='border-b border-gray-300 border-dotted' placeholder='Year' /></p>
+                    <p className='leading-10'><input onChange={(e) => handleInputChange(e)} name='degree' value={education.degree} className='border-b border-gray-300 border-dotted' placeholder='Degree Earned' /> in <input onChange={(e) => handleInputChange(e)} name='field' value={education.field} className='border-b border-gray-300 border-dotted' placeholder='Field of Study' />   <input onChange={(e) => handleInputChange(e)} name='university' value={education.university} className='border-b border-gray-300 border-dotted' placeholder='University Name' />, <input onChange={(e) => handleInputChange(e)} name='place' value={education.place} className='border-b border-gray-300 border-dotted' placeholder='City, State' /> | Graduation Year: <input onChange={(e) => handleInputChange(e)} name='year' value={education.year} className='border-b border-gray-300 border-dotted' placeholder='Year' /></p>
                 </div>
             </div>
             <div>
                 <h className='text-xl font-semibold'>Experience and Skills</h>
                 <div className='flex flex-col w-full gap-1 px-5 mt-3'>
                     <label>What specific experience do you have related to the [job position] you are applying for?</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='experience' value={education.experience} className='block p-2 border-black border-b-' rows="3" placeholder='Write experience here...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='experience' value={education.experience} className='block p-2 border-black border-b-' rows="3" placeholder='Write experience here...' />
                 </div>
                 <div className='flex flex-col w-full gap-1 px-5 mt-3'>
                     <label>Can you provide examples of projects or tasks where you demonstrated [relevant skills]?</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='projects' value={education.projects} className='block p-2 border-black border-b-' rows="3" placeholder='Write skills and projects here...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='projects' value={education.projects} className='block p-2 border-black border-b-' rows="3" placeholder='Write skills and projects here...' />
                 </div>
                 <div className='flex flex-col w-full gap-1 px-5 mt-3'>
                     <label>How do you stay updated with industry trends and advancements?</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='information' value={education.information} className='block p-2 border-black border-b-' rows="3" placeholder='Write your thoughts here...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='information' value={education.information} className='block p-2 border-black border-b-' rows="3" placeholder='Write your thoughts here...' />
                 </div>
             </div>
             <div>
                 <h className='text-xl font-semibold'>Job Specific Knowledge</h>
                 <div className='flex flex-col w-full gap-1 px-5 mt-3'>
                     <label>What do you understand about the responsibilities and requirements of this role?</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='responsibilities' value={education.responsibilities} className='block p-2 border-black border-b-' rows="3" placeholder='Responsibilities and Requirements...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='responsibilities' value={education.responsibilities} className='block p-2 border-black border-b-' rows="3" placeholder='Responsibilities and Requirements...' />
                 </div>
                 <div className='flex flex-col w-full gap-1 px-5 mt-3'>
                     <label>How familiar are you with [specific tools/software] used in this industry?</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='toolAndSoftwares' value={education.toolAndSoftwares} className='block p-2 border-black border-b-' rows="3" placeholder='...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='toolAndSoftwares' value={education.toolAndSoftwares} className='block p-2 border-black border-b-' rows="3" placeholder='...' />
                 </div>
                 <div className='flex flex-col w-full gap-1 px-5 mt-3'>
                     <label>Can you explain your approach to [key aspect of the job]?</label>
-                    <textarea onChange={(e) => handleInputChange(e)} name='approach' value={education.approach} className='block p-2 border-black border-b-' rows="3" placeholder='Write your approach here...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='approach' value={education.approach} className='block p-2 border-black border-b-' rows="3" placeholder='Write your approach here...' />
                 </div>
             </div>
         </div>
     )
 }
 
-const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) => {
+const WorkExperience = ({ step, setStep, workExperiences, setWorkExperiences }) => {
 
     const [workExperience, setWorkExperience] = useState({
         company: '',
@@ -799,13 +852,14 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
         title: '',
         startDate: null,
         endDate: null,
-        achievements: ''
+        achievements: '',
+        currentlyWorking: false,
     })
 
     const [error, setError] = useState('');
 
     const handleAddExp = () => {
-        if (!workExperience.company || !workExperience.location || !workExperience.title || workExperience.startDate == null || workExperience.endDate == null || !workExperience.achievements) {
+        if (!workExperience.company || !workExperience.location || !workExperience.title || workExperience.startDate == null || !workExperience.achievements) {
             setError('Please fill all the fields to add a work experience!')
         } else {
             setWorkExperiences(prevExperiences => [...prevExperiences, workExperience]);
@@ -816,8 +870,11 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
                 title: '',
                 startDate: null,
                 endDate: null,
-                achievements: ''
-            }); 
+                achievements: '',
+                currentlyWorking: false,
+            });
+            setCurrentlyWorking(false)
+            setEndDate(false)
         }
     }
 
@@ -830,7 +887,11 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
     };
 
     const [endDate, setEndDate] = useState(false);
+    const [currentlyWorking, setCurrentlyWorking] = useState(false);
 
+
+
+    console.log(workExperiences)
     return (
         <div className='flex flex-col gap-3 px-20 font-normal text-black w-fit bg-[#F8FAFB] py-10 pb-20 min-h-[70vh] max-h-[70vh] min-w-[60vw] max-w-[60vw] overflow-auto'>
             <div className='flex flex-row justify-between gap-20'>
@@ -841,13 +902,13 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
                         <img src={Arrow} className='rotate-90' />
                     </div>
                     <div onClick={() => {
-                            if(workExperiences.length < 1) {
-                                setError('Please add a Work Experience!')
-                            } else {
-                                setError('');
-                                setStep(step + 1)
-                            }
-                        }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
+                        if (workExperiences.length < 1) {
+                            setError('Please add a Work Experience!')
+                        } else {
+                            setError('');
+                            setStep(step + 1)
+                        }
+                    }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
                         <img src={Arrow} className='-rotate-90' />
                     </div>
                 </div>
@@ -857,10 +918,10 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
                     {
                         workExperiences.map((workExp) => (
                             <div className='flex flex-col rounded border-[1px] border-gray-200 w-full p-2'>
-                                <div className='flex flex-row justify-between gap-10 '> 
-                                <span>{workExp.title}</span>
-                                <span>{workExp.company}</span>
-                                <span>{workExp.location}</span>
+                                <div className='flex flex-row justify-between gap-10 '>
+                                    <span>{workExp.title}</span>
+                                    <span>{workExp.company}</span>
+                                    <span>{workExp.location}</span>
                                 </div>
                             </div>
                         ))
@@ -885,19 +946,24 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
                         <label>Start Date</label>
                         <input onChange={(e) => handleInputChange(e)} name='startDate' value={workExperience.startDate} type='date' className='p-2 border-b-2 border-gray-300 rounded outline-none' />
                     </div>
-                    <div className={`flex-col w-full gap-1 ${endDate ? 'hidden' : 'flex'}`}>
+                    <div className={`flex-col w-full gap-1 ${currentlyWorking || endDate ? 'hidden' : 'flex'}`}>
                         <label>Currently working there?</label>
                         <div className='flex flex-row gap-2'>
                             <button onClick={() => {
+                                setCurrentlyWorking(true)
                                 setWorkExperience((prevData) => ({
                                     ...prevData,
-                                    endDate: Date.now(),
+                                    currentlyWorking: true,
                                 }));
                             }} className='p-2 bg-green-500 border-gray-300 rounded outline-none'>Yes</button>
-                            <button onClick={() => {setEndDate(true)}} className='p-2 bg-red-500 border-gray-300 rounded outline-none'>No</button>
+                            <button onClick={() => { setEndDate(true) }} className='p-2 bg-red-500 border-gray-300 rounded outline-none'>No</button>
                         </div>
                     </div>
-                    <div className={`flex-col w-full gap-1 ${endDate ? 'flex' : 'hidden'}`}>
+                    <div className={`flex-col w-full gap-1 ${currentlyWorking ? 'flex' : 'hidden'}`}>
+                        <label>Currently Working</label>
+                    </div>
+
+                    <div className={`flex-col w-full gap-1 ${(!currentlyWorking && endDate) ? 'flex' : 'hidden'}`}>
                         <label>End Date</label>
                         <input onChange={(e) => handleInputChange(e)} name='endDate' value={workExperience.endDate} type='date' className='p-2 border-b-2 border-gray-300 rounded outline-none' />
                     </div>
@@ -906,7 +972,7 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
             <div>
                 <h className='text-xl font-semibold'>Achievements and Contributions</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='achievements' value={workExperience.achievements} className='block p-2 border-black border-b-' rows="5" placeholder='Write 3-5 points...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='achievements' value={workExperience.achievements} className='block p-2 border-black border-b-' rows="5" placeholder='Write 3-5 points...' />
                 </div>
             </div>
             <button onClick={() => handleAddExp()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
@@ -914,12 +980,12 @@ const WorkExperience = ({step, setStep, workExperiences, setWorkExperiences}) =>
     )
 }
 
-const Skills = ({step, setStep, skills, setSkills, skillsInfo, setSkillsInfo}) => {
-    
+const Skills = ({ step, setStep, skills, setSkills, skillsInfo, setSkillsInfo }) => {
+
     const [skill, setSkill] = useState("");
     const [error, setError] = useState('');
     const handleAddSkill = () => {
-        if(!skill) {
+        if (!skill) {
             setError('Please enter a skill to add!')
         } else {
             setSkills(prevSkills => [...prevSkills, skill]);
@@ -946,17 +1012,17 @@ const Skills = ({step, setStep, skills, setSkills, skillsInfo, setSkillsInfo}) =
                         <img src={Arrow} className='rotate-90' />
                     </div>
                     <div onClick={() => {
-                            if(skills.length < 0) {
-                                setError('Please add at least five skills!')
-                            }
-                            //  else if (!skillsInfo.technicalSkills || !skillsInfo.softSkills || !skillsInfo.specialSkills) {
-                            //     setError('Please answer the questions as well!')
-                            // }
-                             else {
-                                setError('');
-                                setStep(step + 1)
-                            }
-                        }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
+                        if (skills.length < 0) {
+                            setError('Please add at least five skills!')
+                        }
+                        //  else if (!skillsInfo.technicalSkills || !skillsInfo.softSkills || !skillsInfo.specialSkills) {
+                        //     setError('Please answer the questions as well!')
+                        // }
+                        else {
+                            setError('');
+                            setStep(step + 1)
+                        }
+                    }} className='p-2 border-2 border-[#FDCF8B] rounded-full hover:bg-[#FDCF8B] transition-all duration-200 cursor-pointer hover:scale-110'>
                         <img src={Arrow} className='-rotate-90' />
                     </div>
                 </div>
@@ -968,34 +1034,34 @@ const Skills = ({step, setStep, skills, setSkills, skillsInfo, setSkillsInfo}) =
                     ))}
                 </div>
                 <div className='flex flex-row gap-5'>
-                    <input onChange={(e) => setSkill(e.target.value)} value={skill} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Write Skill...'/>
+                    <input onChange={(e) => setSkill(e.target.value)} value={skill} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Write Skill...' />
                     <button onClick={() => handleAddSkill()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
             </div>
             <div>
                 <h className='text-xl font-semibold'>What technical skills do you possess</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='technicalSkills' value={skillsInfo.technicalSkills} className='block p-2 border-black' rows="5" placeholder='(e.g., programming languages, software proficiency)'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='technicalSkills' value={skillsInfo.technicalSkills} className='block p-2 border-black' rows="5" placeholder='(e.g., programming languages, software proficiency)' />
                 </div>
             </div>
             <div>
                 <h className='text-xl font-semibold'>What soft skills do you excel in ?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='softSkills' value={skillsInfo.softSkills} className='block p-2 border-black' rows="5" placeholder='(e.g., communication, leadership, teamwork)'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='softSkills' value={skillsInfo.softSkills} className='block p-2 border-black' rows="5" placeholder='(e.g., communication, leadership, teamwork)' />
                 </div>
             </div>
             <div>
                 <h className='text-xl font-semibold'>Are there any specialized skills relevant to the job you're applying for?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='specialSkills' value={skillsInfo.specialSkills} className='block p-2 border-black' rows="5" placeholder='Write the Skills here...'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='specialSkills' value={skillsInfo.specialSkills} className='block p-2 border-black' rows="5" placeholder='Write the Skills here...' />
                 </div>
             </div>
         </div>
     )
 }
 
-const CertificationsAndLanguages = ({step, setStep, certificates, setCertificates, languages, setLanguages, memberships, setMemberships, volunteerExperinces, setVolunteerExperinces}) => {
-    
+const CertificationsAndLanguages = ({ step, setStep, certificates, setCertificates, languages, setLanguages, memberships, setMemberships, volunteerExperinces, setVolunteerExperinces }) => {
+
     const [certificate, setCertificate] = useState({
         name: '',
         organization: '',
@@ -1093,6 +1159,7 @@ const CertificationsAndLanguages = ({step, setStep, certificates, setCertificate
         }));
     };
 
+
     return (
         <div className='flex flex-col gap-3 px-20 font-normal text-black w-fit bg-[#F8FAFB] py-10 pb-20 min-h-[70vh] max-h-[70vh] min-w-[60vw] max-w-[60vw] overflow-auto'>
             <div className='flex flex-row justify-between gap-20'>
@@ -1118,9 +1185,9 @@ const CertificationsAndLanguages = ({step, setStep, certificates, setCertificate
                     ))}
                 </div>
                 <div className='flex flex-row gap-5'>
-                    <input onChange={(e) => handleCertificateChange(e)} name='name' value={certificate.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Certificate Name'/>
-                    <input onChange={(e) => handleCertificateChange(e)} name='organization' value={certificate.organization} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Organization'/>
-                    <input onChange={(e) => handleCertificateChange(e)} name='year' value={certificate.year} type='number' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Year'/>
+                    <input onChange={(e) => handleCertificateChange(e)} name='name' value={certificate.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Certificate Name' />
+                    <input onChange={(e) => handleCertificateChange(e)} name='organization' value={certificate.organization} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Organization' />
+                    <input onChange={(e) => handleCertificateChange(e)} name='year' value={certificate.year} type='number' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Year' />
                     <button onClick={() => handleAddCertificate()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
             </div>
@@ -1135,12 +1202,12 @@ const CertificationsAndLanguages = ({step, setStep, certificates, setCertificate
                     ))}
                 </div>
                 <div className='flex flex-row gap-5'>
-                    <input onChange={(e) => handleLanguagesChange(e)} name='name' value={language.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='English'/>
-                    <select onChange={(e) => handleLanguagesChange(e)} name='proficiency' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Expert'> 
-                        <option value={0}>Select Proficiency Level</option>
-                        <option value={33}>NewBie</option>
-                        <option value={67}>Intermediate</option>
-                        <option value={100}>Expert</option>
+                    <input onChange={(e) => handleLanguagesChange(e)} name='name' value={language.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='English' />
+                    <select onChange={(e) => handleLanguagesChange(e)} name='proficiency' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Expert'>
+                        <option value={0}>Langaguge Level</option>
+                        <option value={"A1/A2"}>A1/A2</option>
+                        <option value={"B1/B2"}>B1/B2</option>
+                        <option value={"C1/C2"}>C1/C2</option>
                     </select>
                     <button onClick={() => handleAddLanguage()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
@@ -1156,8 +1223,8 @@ const CertificationsAndLanguages = ({step, setStep, certificates, setCertificate
                     ))}
                 </div>
                 <div className='flex flex-row gap-5'>
-                    <input onChange={(e) => handleMembershipChange(e)} name='name' value={membership.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Membership Name'/>
-                    <input onChange={(e) => handleMembershipChange(e)} name='organization' value={membership.organization} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Organization'/>
+                    <input onChange={(e) => handleMembershipChange(e)} name='name' value={membership.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Membership Name' />
+                    <input onChange={(e) => handleMembershipChange(e)} name='organization' value={membership.organization} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Organization' />
                     <button onClick={() => handleAddMembership()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
             </div>
@@ -1178,13 +1245,13 @@ const CertificationsAndLanguages = ({step, setStep, certificates, setCertificate
                 </div>
                 <div className='flex flex-col gap-5'>
                     <div className='flex flex-row w-full gap-3'>
-                        <input onChange={(e) => handleVolunteerChange(e)} name='role' value={volunteerExperince.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Volunteer Role'/>
-                        <input onChange={(e) => handleVolunteerChange(e)} name='organization' value={volunteerExperince.organization} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Organization'/>
-                        <input onChange={(e) => handleVolunteerChange(e)} name='startDate' value={volunteerExperince.startDate} type='date' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Start Date'/>
-                        <input onChange={(e) => handleVolunteerChange(e)} name='endDate' value={volunteerExperince.endDate} type='date' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='End Date'/>
+                        <input onChange={(e) => handleVolunteerChange(e)} name='role' value={volunteerExperince.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Volunteer Role' />
+                        <input onChange={(e) => handleVolunteerChange(e)} name='organization' value={volunteerExperince.organization} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Organization' />
+                        <input onChange={(e) => handleVolunteerChange(e)} name='startDate' value={volunteerExperince.startDate} type='date' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Start Date' />
+                        <input onChange={(e) => handleVolunteerChange(e)} name='endDate' value={volunteerExperince.endDate} type='date' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='End Date' />
                     </div>
                     <div className='flex flex-col w-full gap-1'>
-                        <textarea onChange={(e) => handleVolunteerChange(e)} name='description' value={volunteerExperince.description} className='block p-2 border-black' rows="3" placeholder='Description of duties and contributions...'/>
+                        <textarea onChange={(e) => handleVolunteerChange(e)} name='description' value={volunteerExperince.description} className='block p-2 border-black' rows="3" placeholder='Description of duties and contributions...' />
                     </div>
                     <button onClick={() => handleAddVolunteerExperience()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
@@ -1193,13 +1260,13 @@ const CertificationsAndLanguages = ({step, setStep, certificates, setCertificate
     )
 }
 
-const AchievementsAndReferences = ({step, setStep, achievements, setAchievements, references, setReferences}) => {
+const AchievementsAndReferences = ({ step, setStep, achievements, setAchievements, references, setReferences }) => {
 
-    const [achievement, setAchievement] = useState ({
+    const [achievement, setAchievement] = useState({
         name: '',
         description: '',
     })
-    const [reference, setReference] = useState ({
+    const [reference, setReference] = useState({
         name: '',
         description: '',
     })
@@ -1264,8 +1331,8 @@ const AchievementsAndReferences = ({step, setStep, achievements, setAchievements
                     ))}
                 </div>
                 <div className='flex flex-row gap-5'>
-                    <input onChange={(e) => handleAchievementChange(e)} name='name' value={achievement.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Achievement Name'/>
-                    <textarea onChange={(e) => handleAchievementChange(e)} name='description' value={achievement.description} type='text' className='w-full p-2 border-gray-300 rounded outline-none' placeholder='Description...'/>
+                    <input onChange={(e) => handleAchievementChange(e)} name='name' value={achievement.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Achievement Name' />
+                    <textarea onChange={(e) => handleAchievementChange(e)} name='description' value={achievement.description} type='text' className='w-full p-2 border-gray-300 rounded outline-none' placeholder='Description...' />
                     <button onClick={() => handleAddAchievement()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
             </div>
@@ -1280,8 +1347,8 @@ const AchievementsAndReferences = ({step, setStep, achievements, setAchievements
                     ))}
                 </div>
                 <div className='flex flex-row gap-5'>
-                    <input onChange={(e) => handleReferenceChange(e)} name='name' value={reference.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Reference'/>
-                    <textarea onChange={(e) => handleReferenceChange(e)} name='description' value={reference.description} type='text' className='w-full p-2 border-gray-300 rounded outline-none' placeholder='Brief description and impact...'/>
+                    <input onChange={(e) => handleReferenceChange(e)} name='name' value={reference.name} type='text' className='p-2 border-b-2 border-gray-300 rounded outline-none' placeholder='Reference' />
+                    <textarea onChange={(e) => handleReferenceChange(e)} name='description' value={reference.description} type='text' className='w-full p-2 border-gray-300 rounded outline-none' placeholder='Brief description and impact...' />
                     <button onClick={() => handleAddReference()} className='p-2 px-5 bg-blue-500 rounded '>Add</button>
                 </div>
             </div>
@@ -1289,7 +1356,7 @@ const AchievementsAndReferences = ({step, setStep, achievements, setAchievements
     )
 }
 
-const ProblemSolving = ({step, setStep, problemSolving, setProblemSolving}) => {
+const ProblemSolving = ({ step, setStep, problemSolving, setProblemSolving }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -1315,26 +1382,26 @@ const ProblemSolving = ({step, setStep, problemSolving, setProblemSolving}) => {
             <div>
                 <h className='font-semibold'>Describe a challenging situation you encountered at work and how you resolved it.</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='challengingSituation' value={problemSolving.challengingSituation} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='challengingSituation' value={problemSolving.challengingSituation} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>How do you prioritize tasks and manage deadlines effectively?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='deadlines' value={problemSolving.deadlines} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='deadlines' value={problemSolving.deadlines} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>What steps do you take to ensure quality and accuracy in your work?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='qualityWork' value={problemSolving.qualityWork} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='qualityWork' value={problemSolving.qualityWork} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
-            </div>            
+            </div>
         </div>
     )
 }
 
-const TeamWork = ({step, setStep, teamWork, setTeamWork}) => {
+const TeamWork = ({ step, setStep, teamWork, setTeamWork }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -1360,26 +1427,26 @@ const TeamWork = ({step, setStep, teamWork, setTeamWork}) => {
             <div>
                 <h className='font-semibold'>Give an example of a successful team project you were part of. What was your role, and how did you contribute?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='teamProject' value={teamWork.teamProject} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='teamProject' value={teamWork.teamProject} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>How do you handle conflicts or disagreements within a team environment?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='handleConflicts' value={teamWork.handleConflicts} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='handleConflicts' value={teamWork.handleConflicts} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Describe your communication style and how you adapt it based on different stakeholders.</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='communicationStyle' value={teamWork.communicationStyle} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='communicationStyle' value={teamWork.communicationStyle} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
-            </div>            
+            </div>
         </div>
     )
 }
 
-const CustomerService = ({step, setStep, customerService, setCustomerService}) => {
+const CustomerService = ({ step, setStep, customerService, setCustomerService }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -1405,26 +1472,26 @@ const CustomerService = ({step, setStep, customerService, setCustomerService}) =
             <div>
                 <h className='font-semibold'>How do you approach customer/client satisfaction in your work?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='customerSatisfaction' value={customerService.customerSatisfaction} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='customerSatisfaction' value={customerService.customerSatisfaction} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Can you share an experience where you successfully addressed a customer's concern or request?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='experience' value={customerService.experience} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='experience' value={customerService.experience} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>What strategies do you use to build and maintain positive relationships with clients?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='strategies' value={customerService.strategies} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='strategies' value={customerService.strategies} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
-            </div>            
+            </div>
         </div>
     )
 }
 
-const Adaptibility = ({step, setStep, adaptibility, setAdaptibility}) => {
+const Adaptibility = ({ step, setStep, adaptibility, setAdaptibility }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -1450,26 +1517,26 @@ const Adaptibility = ({step, setStep, adaptibility, setAdaptibility}) => {
             <div>
                 <h className='font-semibold'>How do you adapt to changes or unexpected challenges in your work environment?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='adaptToChanges' value={adaptibility.adaptToChanges} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='adaptToChanges' value={adaptibility.adaptToChanges} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Describe a situation where you had to learn a new skill or technology quickly. How did you approach it?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='learningSituation' value={adaptibility.learningSituation} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='learningSituation' value={adaptibility.learningSituation} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>What are your career goals, and how do you plan to achieve them?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='careerGoals' value={adaptibility.careerGoals} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='careerGoals' value={adaptibility.careerGoals} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
-            </div>            
+            </div>
         </div>
     )
 }
 
-const CompanyMotivation = ({step, setStep, companyMotivation, setCompanyMotivation}) => {
+const CompanyMotivation = ({ step, setStep, companyMotivation, setCompanyMotivation }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -1495,25 +1562,25 @@ const CompanyMotivation = ({step, setStep, companyMotivation, setCompanyMotivati
             <div>
                 <h className='font-semibold'>What interests you most about working for our company?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='interests' value={companyMotivation.interests} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='interests' value={companyMotivation.interests} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>How do you see yourself contributing to our team and achieving our company's goals?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='contribution' value={companyMotivation.contribution} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='contribution' value={companyMotivation.contribution} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Why do you think you are the right fit for this position?</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='fitForPosition' value={companyMotivation.fitForPosition} className='block p-2 border-black' rows="4" placeholder=''/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='fitForPosition' value={companyMotivation.fitForPosition} className='block p-2 border-black' rows="4" placeholder='' />
                 </div>
-            </div>            
+            </div>
         </div>
     )
 }
-const AdditionalQuestions = ({step, setStep, additionalQuestions, setAdditionalQuestions}) => {
+const AdditionalQuestions = ({ step, setStep, additionalQuestions, setAdditionalQuestions }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -1539,37 +1606,37 @@ const AdditionalQuestions = ({step, setStep, additionalQuestions, setAdditionalQ
             <div>
                 <h className='font-semibold'>Software Proficiency: </h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='softwareProficiency' value={additionalQuestions.softwareProficiency} className='block p-2 border-black' rows="4" placeholder='Have you received any awards, scholarships, or recognition for your work or achievements?'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='softwareProficiency' value={additionalQuestions.softwareProficiency} className='block p-2 border-black' rows="4" placeholder='Have you received any awards, scholarships, or recognition for your work or achievements?' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Problem Solving</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='problemSolving' value={additionalQuestions.problemSolving} className='block p-2 border-black' rows="4" placeholder='Describe a complex problem you faced at work and the steps you took to solve it.'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='problemSolving' value={additionalQuestions.problemSolving} className='block p-2 border-black' rows="4" placeholder='Describe a complex problem you faced at work and the steps you took to solve it.' />
                 </div>
-            </div>            
+            </div>
             <div>
                 <h className='font-semibold'>Adaptability & Initiative</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='adaptabilityAndInitiative' value={additionalQuestions.adaptabilityAndInitiative} className='block p-2 border-black' rows="4" placeholder='Provide an example of when you quickly learned a new skill or adapted to a changing work environment.'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='adaptabilityAndInitiative' value={additionalQuestions.adaptabilityAndInitiative} className='block p-2 border-black' rows="4" placeholder='Provide an example of when you quickly learned a new skill or adapted to a changing work environment.' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Continuous Learning</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='continuousLearning' value={additionalQuestions.continuousLearning} className='block p-2 border-black' rows="4" placeholder='Do you have a passion for continuous learning? List any recent courses, workshops, or certifications you`ve completed'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='continuousLearning' value={additionalQuestions.continuousLearning} className='block p-2 border-black' rows="4" placeholder='Do you have a passion for continuous learning? List any recent courses, workshops, or certifications you`ve completed' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Core Strengths</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='coreStrengths' value={additionalQuestions.coreStrengths} className='block p-2 border-black' rows="4" placeholder='What are your top 3-5 skills or qualities that make you a valuable asset?'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='coreStrengths' value={additionalQuestions.coreStrengths} className='block p-2 border-black' rows="4" placeholder='What are your top 3-5 skills or qualities that make you a valuable asset?' />
                 </div>
             </div>
             <div>
                 <h className='font-semibold'>Achievements Showcase</h>
                 <div className='flex flex-col w-full gap-1'>
-                    <textarea onChange={(e) => handleInputChange(e)} name='achievements' value={additionalQuestions.achievements} className='block p-2 border-black' rows="4" placeholder='Think of 2-3 past projects or accomplishments from different roles that demonstrate your skills and impact.'/>
+                    <textarea onChange={(e) => handleInputChange(e)} name='achievements' value={additionalQuestions.achievements} className='block p-2 border-black' rows="4" placeholder='Think of 2-3 past projects or accomplishments from different roles that demonstrate your skills and impact.' />
                 </div>
             </div>
 

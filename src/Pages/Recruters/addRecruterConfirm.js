@@ -117,10 +117,10 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, newRecruiterFo
         const recruiterPhone = newRecruiterFormData.nationality | '0342055086';
 
         doc.setFontSize(10);
-        doc.text(`RECRERUITER NAME: ${recruiterName}`, padding + borderWidth, invoiceToY + 8);
+        doc.text(`${recruiterName}`, padding + borderWidth, invoiceToY + 8);
         doc.setFontSize(8);
-        doc.text(`RECRERUITER ADDRERSS: ${recruiterAddress}`, padding + borderWidth, invoiceToY + 8 + 8);
-        doc.text(`RECRERUITER PHONE: ${recruiterPhone}`, padding + borderWidth, invoiceToY + 8 + 8 + 5);
+        doc.text(`${recruiterAddress}`, padding + borderWidth, invoiceToY + 8 + 8);
+        doc.text(`${recruiterPhone}`, padding + borderWidth, invoiceToY + 8 + 8 + 5);
 
 
         // Define table headers and data
@@ -168,6 +168,8 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, newRecruiterFo
                 3: { halign: 'center' }, // QTY column
                 4: { halign: 'center' }, // TOTAL column
             },
+
+            
         });
 
         // Add Sub Total and Terms & Conditions on the right side
@@ -196,10 +198,7 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, newRecruiterFo
         const termsY = subtotalY + 14; // Y position below Sub Total
         doc.setFont('helvetica', 'bold');
 
-        doc.text('Terms & Conditions', termsX, termsY);
         doc.setFont('helvetica', 'normal');
-
-        doc.text('Sample sample sample', termsX, termsY + 5);
 
 
         // Add Payment Method at the bottom left
@@ -207,10 +206,10 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, newRecruiterFo
         const paymentMethodY = doc.internal.pageSize.getHeight() - padding - borderWidth - 40; // Y position at bottom left
         doc.setFont('helvetica', 'bold');
 
-        doc.text('Payment Method', paymentMethodX, paymentMethodY);
+        doc.text('Payment Method', paymentMethodX, totalY + 2);
         doc.setFont('helvetica', 'normal');
 
-        doc.text(methodOfPayment, paymentMethodX, paymentMethodY + 5);
+        doc.text(methodOfPayment, paymentMethodX, totalY + 10);
 
         console.log("CREATONG PDF")
 
@@ -222,24 +221,36 @@ const Modal = ({ newRecruiterModelStep, setNewRecruiterModelStep, newRecruiterFo
         const tcPadding = 20; // Padding within the border
         const tcContentWidth = doc.internal.pageSize.getWidth() - 2 * (tcPadding);
 
-        // Draw black border with padding for the terms and conditions page
-        doc.setDrawColor(0); // Black border color
-        doc.rect(tcPadding, tcPadding, tcContentWidth, doc.internal.pageSize.getHeight() - 2 * (tcPadding), 'D'); // Draw border (D = 'stroke' only)
 
         // Set font and size for terms and conditions
+
+
+        doc.setFontSize(15);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Terms and Conditions for Payment of Service Fee", (doc.internal.pageSize.getWidth()/2) - 70, 25)
+        
+
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(12);
+        
 
         // Define terms and conditions content
-        const termsAndConditions = `Terms and Conditions for Payment of Service Fee
-        1. Service Fee: By registering for our services, you agree to pay the specified service fee as outlined during the registration process. This fee is non-refundable and constitutes a registration fee for accessing and utilizing our services.
-        2. Payment Terms: Payment of the service fee is due upon registration and must be made in full before accessing any services offered by Global Consultancy Services. We accept payment through bank transfer and cash.
-        3. Non-Refundable Tariffs: Please note that the tariffs or fees associated with our services are non-refundable. Once payment is made, it is considered final and cannot be refunded under any circumstances, including but not limited to cancellation of services, changes in plans, or dissatisfaction with the services provided.
-        4. Service Activation: Upon successful payment of the service fee, your registration will be activated, and you will gain access to the services as per the terms and conditions outlined in our service agreement.
-        5. Cancellation and Termination: Global Consultancy Services reserves the right to cancel or terminate your registration and access to services if payment is not received as per the agreed terms or if there is a violation of our terms and conditions.
-        6. Changes to Terms: Global Consultancy Services reserves the right to modify or update these terms and conditions regarding payment of service fees. Any changes will be communicated to you in advance, and your continued use of our services will indicate your acceptance of the modified terms.
-        7. Contact Information: If you have any questions or concerns regarding the payment of service fees or these terms and conditions, please contact us at info@gcs-eu.com 
-        By proceeding with the registration and payment of the service fee, you acknowledge that you have read, understood, and agreed to abide by these terms and conditions.`;
+        const termsAndConditions = `
+1. Service Fee: By registering for our services, you agree to pay the specified service fee as outlined during the registration process. This fee is non-refundable and constitutes a registration fee for accessing and utilizing our services.
+
+2. Payment Terms: Payment of the service fee is due upon registration and must be made in full before accessing any services offered by Global Consultancy Services. We accept payment through bank transfer and cash.
+
+3. Non-Refundable Tariffs: Please note that the tariffs or fees associated with our services are non-refundable. Once payment is made, it is considered final and cannot be refunded under any circumstances, including but not limited to cancellation of services, changes in plans, or dissatisfaction with the services provided.
+
+4. Service Activation: Upon successful payment of the service fee, your registration will be activated, and you will gain access to the services as per the terms and conditions outlined in our service agreement.
+
+5. Cancellation and Termination: Global Consultancy Services reserves the right to cancel or terminate your registration and access to services if payment is not received as per the agreed terms or if there is a violation of our terms and conditions.
+
+6. Changes to Terms: Global Consultancy Services reserves the right to modify or update these terms and conditions regarding payment of service fees. Any changes will be communicated to you in advance, and your continued use of our services will indicate your acceptance of the modified terms.
+
+7. Contact Information: If you have any questions or concerns regarding the payment of service fees or these terms and conditions, please contact us at info@gcs-eu.com 
+
+By proceeding with the registration and payment of the service fee, you acknowledge that you have read, understood, and agreed to abide by these terms and conditions.`;
 
         // Add terms and conditions content to the page
         const termsAndConditionsLines = doc.splitTextToSize(termsAndConditions, tcContentWidth - 10); // Adjust the width as needed
